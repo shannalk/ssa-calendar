@@ -1,3 +1,9 @@
+import urllib.request
+import re
+
+SOURCE = "https://www.shadysideacademy.org/cf_calendar/feed.cfm?type=ical&feedID=F3A24357A5EE4E3A8F9CF4CB74DE53A9"
+OUTPUT = "calendar.ics"
+
 # Download the current SSA calendar
 request = urllib.request.Request(
     SOURCE,
@@ -35,15 +41,8 @@ if "TZID:America/New_York" not in data:
         1
     )
 
-# Convert only timezone-less TIMED events.
-# All-day events use YYYYMMDD and are deliberately left unchanged.
-#
-# A line such as:
-#   DTSTART:20260824T080000
-# becomes:
-#   DTSTART;TZID=America/New_York:20260824T080000
-#
-# But a line that already has TZID or ends in Z is left alone.
+# Convert only timezone-less timed events.
+# All-day events use YYYYMMDD and are left unchanged.
 data = re.sub(
     r"(?m)^(DTSTART|DTEND):(\d{8}T\d{6})$",
     r"\1;TZID=America/New_York:\2",
